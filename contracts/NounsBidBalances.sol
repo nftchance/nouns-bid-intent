@@ -23,7 +23,7 @@ abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
     address private constant DOLPHIN_ETH =
         0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE;
 
-    /// @dev On bid execution, 0.0002% of the bid is sent to the Nouns DAO.
+    /// @dev On bid execution, 0.0002% of the bid is sent to the protocol.
     /// @notice In effect, that means it costs < $5 to prevent thousands
     ///         in lost economic value and/or collection appraisal (RFV).
     uint256 private constant protocolFee = 2;
@@ -77,7 +77,7 @@ abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
     }
 
     /**
-     * @dev Use the money provised by the sender to bid on the current auction.
+     * @dev Use the money provided by the sender to bid on the current auction.
      * @param $onBehalf The address of the sender.
      * @param $value The amount of money to use.
      */
@@ -115,7 +115,7 @@ abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
         balances[msg.sender] -= $value;
 
         /// @dev Calculate the protocol fee.
-        uint256 protocolFeeValue = ($value * protocolFee) / 10000;
+        uint256 protocolFeeValue = _valueToProtocolFee($value);
 
         /// @dev Transfer the protocol fee to the owner of the contract.
         balances[owner()] += protocolFeeValue;
@@ -183,6 +183,26 @@ abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
         else revert InsufficientExecutionPath();
 
         emit Taken(msg.sender, $onBehalf, $asset, $value);
+    }
+
+    /**
+     * @dev Calculate the amount to provide when calling the Bid Scheduler
+     *      by accounting for the cost consumption of the:
+     *          - Protocol fee.
+     *          - Transaction execution fee.
+     * @notice ie: If you want to bid $100, then you need to provide $100.20
+     *         to the Bid Scheduler.
+     */
+    function _bidToValue(
+        uint256 $bidValue
+    ) internal pure returns (uint256 $executionValue) {
+        $executionValue = ($bidValue * 10000) / (10000 - protocolFee);
+    }
+
+    function _valueToProtocolFee(
+        uint256 $value
+    ) internal pure returns (uint256) {
+        return ($value * protocolFee) / 10000;
     }
 
     /**
