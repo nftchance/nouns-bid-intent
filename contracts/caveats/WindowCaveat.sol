@@ -13,14 +13,14 @@ import {IWindowCaveat} from "../interfaces/IWindowCaveat.sol";
  * @author @nftchance <chance@utc24.io>
  *
  * @dev When working with this Caveat, you will generate timestamps with:
- *      ◉ Javascript / Typescript:
+ *    Javascript / Typescript:
  *         ◉ `const dateInSecs = Math.floor(new Date().getTime() / 1000);`
- *     ◉ Rust:
+ *    Rust:
  *         ◉ `let date_in_secs = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_secs();`
- *     ◉ Python:
+ *    Python:
  *         ◉ `import time`
  *         ◉ `date_in_secs = int(time.time())`
- *    ◉ Solidity:
+ *    Solidity:
  *         ◉ `uint256 dateInSecs = block.timestamp;`
  */
 abstract contract WindowCaveat is IWindowCaveat {
