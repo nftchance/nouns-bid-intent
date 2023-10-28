@@ -8,13 +8,15 @@ import {INounsToken} from "./interfaces/INounsToken.sol";
 
 import {Ownable} from "solady/src/auth/Ownable.sol";
 
+import {Framework} from "@nftchance/emporium-core/src/contracts/abstracts/Framework.sol";
+
 /**
  * @title Nouns Bid Balances
  * @notice This contract is responsible for tracking the balances of users
  *         who have deposited money to be used for bidding on Nouns.
  * @author @nftchance <chance@utc24.io>
  */
-abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
+abstract contract NounsBidBalances is INounsBidScheduler, Ownable, Framework {
     /// @dev Accessible interface to the active Nouns Auction House.
     INounsAuctionHouse public immutable auctionHouse;
     INounsToken public immutable nouns;
@@ -37,7 +39,9 @@ abstract contract NounsBidBalances is INounsBidScheduler, Ownable {
     /// @dev Account for the money deposited by each user.
     mapping(address => uint256) public balances;
 
-    constructor(address $auctionHouse, address $nouns, address $owner) {
+    constructor(address $auctionHouse, address $nouns, address $owner) 
+        Framework("NounsAuctionHouseScheduledBids", "0.0.0")
+    {
         /// @dev Initialize the Auction House and Nouns interfaces.
         auctionHouse = INounsAuctionHouse($auctionHouse);
         nouns = INounsToken($nouns);
